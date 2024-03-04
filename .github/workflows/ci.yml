@@ -38,6 +38,7 @@ jobs:
   load-test:
     name: load-test
     runs-on: ubuntu-latest
+    needs: publish
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -49,7 +50,7 @@ jobs:
           java-version: 17
 
       - name: running everything
-        run: docker-compose up --build --force-recreate -d
+        run: docker-compose -f docker-compose-final.yml up --build --force-recreate -d
 
       - name: test
         run: |
