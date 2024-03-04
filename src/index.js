@@ -16,6 +16,8 @@ const pool = new Pool({
 })
 
 const HeaderContentType = 'Content-Type'
+const HeaderContentLength = 'Content-Length'
+
 const MimeTypeApplicationJSON = 'application/json; charset=utf-8'
 
 const MaxBodySize = 1048576
@@ -84,7 +86,7 @@ const server = http.createServer(async function (req, res) {
   const method = req.method
 
   if (parts[1] !== 'clientes') {
-    res.writeHead(422)
+    res.writeHead(404)
     res.end()
     return
   }
@@ -92,24 +94,21 @@ const server = http.createServer(async function (req, res) {
   const pid = parts[2]
   if (!pid) {
     res.writeHead(422)
-    res.write('identificador de cliente nao informado')
-    res.end()
+    res.end('identificador de cliente nao informado')
     return
   }
 
   const clienteid = Number(pid)
   if (isNaN(clienteid)) {
     res.writeHead(422)
-    res.write('identificador de cliente nao informado')
-    res.end()
+    res.end('identificador de cliente nao informado')
     return
   }
 
   const limite = Clientes.get(clienteid)
-  if (typeof limite === 'undefined') {
+  if (limite === 'undefined') {
     res.writeHead(404)
-    res.write('cliente nao encontrado')
-    res.end()
+    res.end('cliente nao encontrado')
     return
   }
 
@@ -130,17 +129,16 @@ const server = http.createServer(async function (req, res) {
     const rows = results.rows
     if (!rows) {
       res.writeHead(404)
-      res.write('informacao do cliente nao encontrada')
-      res.end()
+      res.end('informacao do cliente nao encontrada')
       return
     }
 
     const balance = rows[0]
-    const lastTransactions = new Array(rows.length-1)
+    const lastTransactions = new Array(rows.length - 1)
 
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i]
-      lastTransactions[i-1] = { valor: row[0], descricao: row[1], tipo: row[2], realizada_em: row[3] }
+      lastTransactions[i - 1] = { valor: row[0], descricao: row[1], tipo: row[2], realizada_em: row[3] }
     }
 
     const extrato = {
@@ -148,10 +146,12 @@ const server = http.createServer(async function (req, res) {
       ultimas_transacoes: lastTransactions,
     }
 
-    res.setHeader(HeaderContentType, MimeTypeApplicationJSON)
-    res.writeHead(200)
-    res.write(stringifyExtratoResponse(extrato))
-    res.end()
+    const data = stringifyExtratoResponse(extrato)
+    const contentLength = Buffer.byteLength(data, 'utf-8')
+
+    res.writeHead(200, { [HeaderContentType]: MimeTypeApplicationJSON, [HeaderContentLength]: contentLength })
+    res.end(data)
+
     return
   }
 
@@ -161,38 +161,33 @@ const server = http.createServer(async function (req, res) {
     let body = {}
     try {
       body = await readBody(req)
-    } catch (err) {
-      console.log(err)
+    } catch {
       res.writeHead(500)
-      res.end()
+      res.end('transacoes: erro ao processar chamada')
       return
     }
 
     if (!body.descricao || body.descricao.length > 10) {
       res.writeHead(422)
-      res.write('descricao nao pode ser vazia e deve conter ate 10 caracteres')
-      res.end()
+      res.end('descricao nao pode ser vazia e deve conter ate 10 caracteres')
       return
     }
-  
+
     if (body.valor <= 0) {
       res.writeHead(422)
-      res.write('valor da transacao precisa ser maior que 0')
-      res.end()
+      res.end('valor da transacao precisa ser maior que 0')
       return
     }
 
     if (!Number.isInteger(body.valor)) {
       res.writeHead(422)
-      res.write('valor precisa ser um numero inteiro > 0')
-      res.end()
+      res.end('valor precisa ser um numero inteiro > 0')
       return
     }
-  
+
     if (body.tipo != TrTypeDebit && body.tipo != TrTypeCredit) {
       res.writeHead(422)
-      res.write('tipo da transacao precisar ser: c ou d')
-      res.end()
+      res.end('tipo da transacao precisar ser: c ou d')
       return
     }
 
@@ -201,34 +196,40 @@ const server = http.createServer(async function (req, res) {
       values: [clienteid, body.descricao, body.tipo, body.valor],
       rowMode: 'array',
     }
-  
+
     const client = await pool.connect()
     const results = await client.query(qry)
     const row = results.rows[0]
-  
+
     client.release()
-  
+
     switch (row[1]) {
-    case FnReturnCodeSuccess:
-      res.setHeader(HeaderContentType, MimeTypeApplicationJSON)
-      res.writeHead(200)
-      res.write(stringfyTransacoesResponse({ saldo: row[0], limite }))
-      break
-    case FnReturnCodeInsufficientBalance:
-      res.writeHead(422)
-      res.write('saldo insuficiente')
-      break
-    case FnReturnCodeCustomerNotFound:
-      res.writeHead(404)
-      res.write('cliente nao encontrado')
-      break
-    default:
-      res.writeHead(500)
-      res.write('estado invalido ou desconhecido')
+    case FnReturnCodeSuccess: {
+      const data = stringfyTransacoesResponse({ saldo: row[0], limite })
+      const contentLength = Buffer.byteLength(data, 'utf-8')
+  
+      res.writeHead(200, { [HeaderContentType]: MimeTypeApplicationJSON, [HeaderContentLength]: contentLength })
+      res.end(data)
+
       break
     }
 
-    res.end()
+    case FnReturnCodeInsufficientBalance:
+      res.writeHead(422)
+      res.end('saldo insuficiente')
+      break
+
+    case FnReturnCodeCustomerNotFound:
+      res.writeHead(404)
+      res.end('cliente nao encontrado')
+      break
+
+    default:
+      res.writeHead(500)
+      res.end('estado invalido ou desconhecido')
+      break
+    }
+
     return
   }
 
@@ -250,7 +251,7 @@ function readBody(req) {
     const buf = Buffer.allocUnsafe(contentLength, null, 'utf-8')
     let offset = 0
 
-    const onData = function(chunk) {
+    const onData = function (chunk) {
       const size = Buffer.byteLength(chunk, 'utf-8')
       chunk.copy(buf, offset, 0, size)
 
@@ -258,7 +259,7 @@ function readBody(req) {
     }
 
     req.on('data', onData)
-    req.on('error', function(err) { reject(err) })
+    req.on('error', function (err) { reject(err) })
     req.on('end', function () { return resolve(JSON.parse(buf.toString())) })
   })
 }
@@ -267,4 +268,4 @@ server.keepAliveTimeout = 5 * 60 * 1000
 server.maxRequestsPerSocket = 0
 server.maxConnections = 50000
 
-server.listen(Addr, function() { console.log('connected') })
+server.listen(Addr, function () { console.log('connected') })
