@@ -4,10 +4,16 @@ import pkgPg from 'pg'
 const { native } = pkgPg
 const { Pool } = native
 import fastJson from 'fast-json-stringify'
-import { Clientes } from './clientes.js'
 
 const DbConnectionString = process.env.DB_CONNECTION_STRING ?? 'postgresql://rinha:rinha@0.0.0.0:5432/rinha?sslmode=disable'
 const Addr = process.env.ADDR ?? 8080
+
+const Clientes = new Map()
+  .set(1, 100000)
+  .set(2, 80000)
+  .set(3, 1000000)
+  .set(4, 10000000)
+  .set(5, 500000)
 
 const pool = new Pool({
   connectionString: DbConnectionString,
