@@ -16,9 +16,9 @@ limit 10)
 
 export async function handleExtratoBancario(req, reply) {
   const pid = req.params.id
-  const limite = Clientes.get()
+  const limite = Clientes.get(pid)
   if (typeof limite === 'undefined') {
-    return reply.code(404).send('identificador de cliente invalido')
+    return reply.code(404).send('cliente nao encontrado')
   }
 
   const qry = {

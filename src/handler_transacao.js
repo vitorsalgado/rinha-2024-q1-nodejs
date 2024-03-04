@@ -13,7 +13,7 @@ export async function handleTransacao(req, reply) {
   const pid = req.params.id
   const limite = Clientes.get(pid)
   if (typeof limite === 'undefined') {
-    return reply.code(404).send('identificador de cliente invalido')
+    return reply.code(404).send('cliente nao encontrado')
   }
 
   if (!req.body.descricao || req.body.descricao.length > 10) {
