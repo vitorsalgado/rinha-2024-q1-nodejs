@@ -1,4 +1,4 @@
-# Rinha de Backend 2024 Q1 · Node.js · [![ci](https://github.com/vitorsalgado/rinha-2024-q1-nodejs/actions/workflows/ci.yml/badge.svg)](https://github.com/vitorsalgado/rinha-2024-q1-nodejs/actions/workflows/ci.yml) · ![GitHub License](https://img.shields.io/github/license/vitorsalgado/rinha-2024-q1-nodejs)
+# Rinha de Backend 2024 Q1 · Node.js · [![ci](https://github.com/vitorsalgado/rinha-2024-q1-nodejs/actions/workflows/ci.yml/badge.svg)](https://github.com/vitorsalgado/rinha-2024-q1-nodejs/actions/workflows/ci.yml) · ![GitHub License](https://img.shields.io/github/license/vitorsalgado/rinha-2024-q1)
 
 Proposta de implementação da **[Rinha de Backend 2024 Q1](https://github.com/zanfranceschi/rinha-de-backend-2024-q1)**.  
 Os resultados dos testes são publicados automaticamente neste **[site](https://vitorsalgado.github.io/rinha-2024-q1-nodejs/)**.
