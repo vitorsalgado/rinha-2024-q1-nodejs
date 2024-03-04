@@ -106,7 +106,7 @@ const server = http.createServer(async function (req, res) {
   }
 
   const limite = Clientes.get(clienteid)
-  if (limite === 'undefined') {
+  if (typeof limite === 'undefined') {
     res.writeHead(404)
     res.end('cliente nao encontrado')
     return
