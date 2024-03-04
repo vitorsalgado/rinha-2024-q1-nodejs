@@ -14,6 +14,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 5 * 1000
 })
 
+const HeaderContentType = 'Content-Type'
+const MimeTypeApplicationJSON = 'application/json; charset=utf-8'
+
+const MaxBodySize = 1048576
+
 const CmdExtratoQry = `
 (select s.saldo as v, '' as d, '' as t, now() as d
 from saldos s
@@ -142,7 +147,7 @@ const server = http.createServer(async function (req, res) {
       ultimas_transacoes: lastTransactions,
     }
 
-    res.setHeader('Content-Type', 'application/json')
+    res.setHeader(HeaderContentType, MimeTypeApplicationJSON)
     res.writeHead(200)
     res.write(stringifyExtratoResponse(extrato))
     res.end()
@@ -155,23 +160,24 @@ const server = http.createServer(async function (req, res) {
     let body
     try {
       body = await new Promise(function (resolve, reject) {
-        const contentLength = req.headers['content-length']
-        if (!contentLength) {
-          return reject('content-length nao informado')
+        const v = req.headers['content-length']
+        const contentLength = v === 'undefined'
+          ? NaN
+          : Number(v)
+
+        if (contentLength > MaxBodySize || contentLength === 0) {
+          return reject('content-length invalido')
         }
 
-        const buf = Buffer.alloc(Number(contentLength), null, 'utf-8')
+        const buf = Buffer.allocUnsafe(contentLength, null, 'utf-8')
         let offset = 0
-        
+
         req.on('data', function(chunk) {
-          const size = Buffer.byteLength(chunk)
-          buf.fill(chunk, offset, size)
-          offset += size
+          buf.fill(chunk, offset, chunk.length)
+          offset += chunk.length
         })
 
-        req.on('end', function () {
-          return resolve(JSON.parse(buf.toString()))
-        })
+        req.on('end', function () { return resolve(JSON.parse(buf.toString())) })
       })
     } catch (err) {
       console.log(err)
@@ -222,7 +228,7 @@ const server = http.createServer(async function (req, res) {
   
     switch (row[1]) {
     case FnReturnCodeSuccess:
-      res.setHeader('Content-Type', 'application/json')
+      res.setHeader(HeaderContentType, MimeTypeApplicationJSON)
       res.writeHead(200)
       res.write(stringfyTransacoesResponse({ saldo: row[0], limite }))
       break
