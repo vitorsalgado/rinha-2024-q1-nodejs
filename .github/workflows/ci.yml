@@ -55,3 +55,7 @@ jobs:
         with:
           path: ${{ env.RINHA_DIR }}/load-test/user-files/results/${{ env.GATLING_REPORT }}
           retention-days: 2
+
+      - name: deploy results
+        id: deployment
+        uses: actions/deploy-pages@v4
