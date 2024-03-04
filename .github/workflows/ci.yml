@@ -33,7 +33,7 @@ jobs:
           cache: 'npm'
 
       - name: deps
-        run: npm run ci
+        run: npm ci
 
   load-test:
     name: load-test
