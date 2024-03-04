@@ -12,7 +12,6 @@ services:
       - ADDR=8081
       - NODE_ENV=production
       - UV_THREADPOOL_SIZE=1
-      # - UV_USE_IO_URING=true
     depends_on:
       db:
         condition: service_healthy
@@ -32,7 +31,6 @@ services:
       - ADDR=8082
       - NODE_ENV=production
       - UV_THREADPOOL_SIZE=1
-      # - UV_USE_IO_URING=true
 
   envoy:
     image: envoyproxy/envoy:v1.29-latest

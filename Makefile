@@ -34,3 +34,11 @@ prepare:
 .PHONY: test
 test:
 	./bin/executar-teste-local
+
+.PHONY: up-dev
+up-dev: ## run dev env
+	@docker-compose -f ./docker-compose-db-only.yml up --force-recreate --build
+
+.PHONY: down-dev
+down-dev: ## stop dev env
+	@docker-compose -f ./docker-compose-db-only.yml down --volumes --remove-orphans

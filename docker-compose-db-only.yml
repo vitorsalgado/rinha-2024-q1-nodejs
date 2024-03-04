@@ -1,0 +1,13 @@
+version: "3.5"
+
+services:
+  db:
+    image: postgres:16.2
+    environment:
+      - POSTGRES_PASSWORD=rinha
+      - POSTGRES_USER=rinha
+      - POSTGRES_DB=rinha
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./conf/script.sql:/docker-entrypoint-initdb.d/script.sql
