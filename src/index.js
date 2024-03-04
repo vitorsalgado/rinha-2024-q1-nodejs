@@ -1,4 +1,5 @@
 import http from 'node:http'
+import { Buffer } from 'node:buffer'
 import pkgPg from 'pg'
 const { native } = pkgPg
 const { Pool } = native
@@ -134,12 +135,12 @@ const server = http.createServer(async function (req, res) {
       return
     }
 
-    const balance = rows.shift()
-    const lastTransactions = new Array(rows.length)
+    const balance = rows[0]
+    const lastTransactions = new Array(rows.length-1)
 
-    for (let i = 0; i < rows.length; i++) {
+    for (let i = 1; i < rows.length; i++) {
       const row = rows[i]
-      lastTransactions[i] = { valor: row[0], descricao: row[1], tipo: row[2], realizada_em: row[3] }
+      lastTransactions[i-1] = { valor: row[0], descricao: row[1], tipo: row[2], realizada_em: row[3] }
     }
 
     const extrato = {
@@ -157,28 +158,9 @@ const server = http.createServer(async function (req, res) {
   // Transacoes
   // --
   if (method === 'POST' && parts[3] === 'transacoes') {
-    let body
+    let body = {}
     try {
-      body = await new Promise(function (resolve, reject) {
-        const v = req.headers['content-length']
-        const contentLength = v === 'undefined'
-          ? NaN
-          : Number(v)
-
-        if (contentLength > MaxBodySize || contentLength === 0) {
-          return reject('content-length invalido')
-        }
-
-        const buf = Buffer.allocUnsafe(contentLength, null, 'utf-8')
-        let offset = 0
-
-        req.on('data', function(chunk) {
-          buf.fill(chunk, offset, chunk.length)
-          offset += chunk.length
-        })
-
-        req.on('end', function () { return resolve(JSON.parse(buf.toString())) })
-      })
+      body = await readBody(req)
     } catch (err) {
       console.log(err)
       res.writeHead(500)
@@ -253,6 +235,34 @@ const server = http.createServer(async function (req, res) {
   res.writeHead(404)
   res.end()
 })
+
+function readBody(req) {
+  return new Promise(function (resolve, reject) {
+    const v = req.headers['content-length']
+    const contentLength = v === 'undefined'
+      ? NaN
+      : Number(v)
+
+    if (contentLength > MaxBodySize || contentLength === 0) {
+      return reject('content-length invalido')
+    }
+
+    const buf = Buffer.allocUnsafe(contentLength, null, 'utf-8')
+    let offset = 0
+
+    const onData = function(chunk) {
+      const size = Buffer.byteLength(chunk, 'utf-8')
+
+      buf.fill(chunk, offset, size)
+
+      offset += size
+    }
+
+    req.on('data', onData)
+    req.on('error', function(err) { reject(err) })
+    req.on('end', function () { return resolve(JSON.parse(buf.toString())) })
+  })
+}
 
 server.keepAliveTimeout = 5 * 60 * 1000
 server.maxRequestsPerSocket = 0
