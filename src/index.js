@@ -252,8 +252,7 @@ function readBody(req) {
 
     const onData = function(chunk) {
       const size = Buffer.byteLength(chunk, 'utf-8')
-
-      buf.fill(chunk, offset, size)
+      chunk.copy(buf, offset, 0, size)
 
       offset += size
     }
