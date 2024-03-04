@@ -128,3 +128,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# project
+.local/
+.vscode/
+.idea/
+.bench/
+
+rinha-de-backend-2024-q1/
+out/
+
+.env

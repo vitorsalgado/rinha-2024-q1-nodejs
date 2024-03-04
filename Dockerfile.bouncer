@@ -1,0 +1,12 @@
+FROM alpine:3.19.1
+
+RUN apk --update add pgbouncer bash && \
+    adduser postgres -D && \
+    mkdir -p /var/lib/postgresql/pgbouncer && \
+    chown -R postgres:postgres /var/lib/postgresql/pgbouncer
+
+USER postgres
+
+COPY ./conf/pgbouncer-docker-entrypoint /docker-entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/docker-entrypoint.sh"]

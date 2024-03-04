@@ -1,0 +1,26 @@
+{
+  "name": "rinha-2024-q1-nodejs",
+  "version": "1.0.0",
+  "description": "Rinha de Backend 2024 Q1 Node.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "start:dev": "nodemon ./src/indext.js",
+    "lint": "eslint --ext .js ."
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/postgres": "^5.2.2",
+    "fastify": "^4.26.1",
+    "pg": "^8.11.3",
+    "pg-native": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/pg": "^8.11.2",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.0"
+  }
+}

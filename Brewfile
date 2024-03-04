@@ -1,0 +1,2 @@
+brew "libpq"
+brew "postgresql"
