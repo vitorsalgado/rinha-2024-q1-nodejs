@@ -11,7 +11,7 @@ services:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
       - ADDR=8081
       - NODE_ENV=production
-      - UV_THREADPOOL_SIZE=2
+      - UV_THREADPOOL_SIZE=1
     depends_on:
       db:
         condition: service_healthy
@@ -30,7 +30,7 @@ services:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
       - ADDR=8082
       - NODE_ENV=production
-      - UV_THREADPOOL_SIZE=2
+      - UV_THREADPOOL_SIZE=1
 
   envoy:
     image: envoyproxy/envoy:v1.29-latest
