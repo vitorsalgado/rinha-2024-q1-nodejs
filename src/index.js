@@ -6,6 +6,7 @@ const { Pool } = native
 import fastJson from 'fast-json-stringify'
 
 const DbConnectionString = process.env.DB_CONNECTION_STRING ?? 'postgresql://rinha:rinha@0.0.0.0:5432/rinha?sslmode=disable'
+const DbPoolSize = process.env.DB_POOL_SIZE ?? 5
 const Addr = process.env.ADDR ?? 8080
 
 const Clientes = new Map()
@@ -17,7 +18,7 @@ const Clientes = new Map()
 
 const pool = new Pool({
   connectionString: DbConnectionString,
-  max: 5,
+  max: DbPoolSize,
   connectionTimeoutMillis: 5 * 1000
 })
 
