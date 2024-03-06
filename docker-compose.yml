@@ -11,15 +11,15 @@ services:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
       - ADDR=8081
       - NODE_ENV=production
-      - UV_THREADPOOL_SIZE=2
+      - UV_THREADPOOL_SIZE=1
     depends_on:
       db:
         condition: service_healthy
     deploy:
       resources:
         limits:
-          cpus: '0.35'
-          memory: '100MB'
+          cpus: '0.3'
+          memory: '75MB'
 
   api02:
     <<: *api
@@ -30,7 +30,7 @@ services:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
       - ADDR=8082
       - NODE_ENV=production
-      - UV_THREADPOOL_SIZE=2
+      - UV_THREADPOOL_SIZE=1
 
   envoy:
     image: envoyproxy/envoy:v1.29-latest
@@ -47,7 +47,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: '0.3'
           memory: '80MB'
 
   db:
@@ -76,7 +76,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: '250MB'
+          memory: '300MB'
 
   bouncer:
     build:
