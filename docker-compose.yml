@@ -9,7 +9,6 @@ services:
     network_mode: host
     environment:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
-      - DB_POOL_SIZE=10
       - ADDR=8081
       - NODE_ENV=production
       - UV_THREADPOOL_SIZE=1
@@ -29,7 +28,6 @@ services:
     network_mode: host
     environment:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
-      - DB_POOL_SIZE=10
       - ADDR=8082
       - NODE_ENV=production
       - UV_THREADPOOL_SIZE=1
