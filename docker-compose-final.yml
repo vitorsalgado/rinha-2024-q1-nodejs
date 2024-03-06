@@ -11,7 +11,7 @@ services:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
       - ADDR=8081
       - NODE_ENV=production
-      - UV_THREADPOOL_SIZE=2
+      - UV_THREADPOOL_SIZE=1
     depends_on:
       db:
         condition: service_healthy
@@ -30,7 +30,7 @@ services:
       - DB_CONNECTION_STRING=postgresql://rinha:rinha@0.0.0.0:6432/rinha?sslmode=disable
       - ADDR=8082
       - NODE_ENV=production
-      - UV_THREADPOOL_SIZE=2
+      - UV_THREADPOOL_SIZE=1
 
   envoy:
     image: envoyproxy/envoy:v1.29-latest
@@ -83,7 +83,7 @@ services:
     pull_policy: always
     container_name: bouncer
     environment:
-      PGB_DATABASES: rinha = host=0.0.0.0 port=5432 pool_mode=statement pool_size=20
+      PGB_DATABASES: rinha = host=0.0.0.0 port=5432 pool_mode=statement pool_size=25
       PGB_ADMIN_USERS: rinha
       PGB_ADMIN_PASSWORDS: rinha
     network_mode: host
