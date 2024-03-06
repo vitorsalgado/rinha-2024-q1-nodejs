@@ -18,8 +18,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
-          memory: '75MB'
+          cpus: '0.35'
+          memory: '100MB'
 
   api02:
     <<: *api
@@ -47,7 +47,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
+          cpus: '0.2'
           memory: '80MB'
 
   db:
@@ -76,7 +76,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: '300MB'
+          memory: '250MB'
 
   bouncer:
     build:
