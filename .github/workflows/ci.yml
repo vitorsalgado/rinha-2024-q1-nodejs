@@ -50,7 +50,7 @@ jobs:
           java-version: 17
 
       - name: running everything
-        run: docker-compose -f docker-compose-final.yml up --build --force-recreate -d
+        run: docker-compose up --build --force-recreate -d
 
       - name: test
         run: |
