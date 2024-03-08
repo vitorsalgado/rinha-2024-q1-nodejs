@@ -15,10 +15,10 @@ Os resultados dos testes são publicados automaticamente neste **[site](https://
 Alguns pontos sobre o projeto:  
 
 - HTTP server bem simples usando a std lib.
-- _pg_ e _pg-native_ para conexão com o Postgres. parecia ser a opção mais rádpida, mas não cheguei a testar outras opções.
+- _pg_ e _pg-native_ para conexão com o Postgres. parecia ser a opção mais rápida, mas não cheguei a testar outras formas.
 - _fast-json-stringify_ para serialização rápida de JSON.
 - configurar o _libuv_ para usar **1** thread.
-- para a leitura do request _body_, usei um _Buffer_ pré-alocado com o _content-length_ da requisição, ao invés de concatenar strings ou arrays com Buffer.concat. essa forma me pareceu mais eficiente e se saiu melhor em alguns benchmarks simples locais. veja [aqui](./src/index.js#L258).
+- para a leitura do request _body_, usei um _Buffer_ pré-alocado com o _content-length_ da requisição, ao invés de concatenar strings ou arrays com Buffer.concat. essa forma me pareceu mais eficiente e se saiu melhor em alguns benchmarks locais. veja [aqui](./src/index.js#L258).
 - uso do componente PgBouncer para uma gestão mais eficiente de conexões com o banco.
 - _Envoy_ como load balancer.
 - as operações de débito, crédito e extrato são feitas com apenas uma chamada ao banco, reduzindo o número de idas e vindas ao mesmo. No caso das operações de débito e crédito, foi utilizada uma function no Postgres que concentra a regra de negócio.
