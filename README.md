@@ -11,6 +11,8 @@ Submissão: [aqui](https://github.com/zanfranceschi/rinha-de-backend-2024-q1/tre
 - Envoy
 - PgBouncer
 
+## Sobre
+
 A idéia era criar um projeto bem simples, com o mínimo possível de libs e frameworks e que também fosse fácil de replicar em outras linguagens.  
 Em relação a **performance**, aqui algumas idéias que guiaram o projeto:
 
